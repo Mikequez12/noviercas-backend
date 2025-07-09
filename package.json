@@ -1,0 +1,11 @@
+{
+  "engines": {
+    "node": ">=16.0.0 <=20.0.0"
+  },
+  "name": "mi-proyecto",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "python3 main.py"
+  },
+  "dependencies": {}
+}

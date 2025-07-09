@@ -119,5 +119,6 @@ def exp_tokens():
     with open('tokens.json', 'w') as file:
         json.dump(new_tokens, file)
 
-if __name__ == '__main__':
-  app.run(port=int(os.environ.get("PORT", 3000)))
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))  # Render la define automáticamente
+    app.run(host="0.0.0.0", port=port)         # ← host correcto

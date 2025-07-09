@@ -12,8 +12,14 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-@app.route('/admin', methods=['POST'])
+@app.route('/admin', methods=['POST','OPTIONS'])
 def admin():
+  if request.method == 'OPTIONS':
+        return 'preflight ok', 200, {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'PUT,DELETE',
+            'Access-Control-Allow-Headers': 'content-type'
+        }
   exp_tokens()
   if (request.get_json()['password'] == '#noviercas'):
     with open('tokens.json','r',encoding='utf-8') as file:
@@ -43,8 +49,14 @@ if not os.path.exists('tokens.json'):
     with open('tokens.json', 'w') as f:
         json.dump({}, f)
   
-@app.route('/token', methods=['POST'])
+@app.route('/token', methods=['POST','OPTIONS'])
 def handle_token():
+    if request.method == 'OPTIONS':
+        return 'preflight ok', 200, {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'PUT,DELETE',
+            'Access-Control-Allow-Headers': 'content-type'
+        }
     exp_tokens()
     
     with open('tokens.json') as file:
@@ -80,8 +92,14 @@ def handle_token():
         "expires-in": expiration.isoformat()
     })
 
-@app.route('/send', methods=['POST'])
+@app.route('/send', methods=['POST','OPTIONS'])
 def send_data():
+    if request.method == 'OPTIONS':
+        return 'preflight ok', 200, {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'PUT,DELETE',
+            'Access-Control-Allow-Headers': 'content-type'
+        }
     name = request.get_json()['name']
     token = request.get_json()['token']
     mail = request.get_json()['mail']
@@ -91,8 +109,14 @@ def send_data():
     return jsonify({"status":"ok","values":{"name":name,"token":token,"mail":mail}})
 
 
-@app.route('/check', methods=['POST'])
+@app.route('/check', methods=['POST','OPTIONS'])
 def check():
+  if request.method == 'OPTIONS':
+        return 'preflight ok', 200, {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'PUT,DELETE',
+            'Access-Control-Allow-Headers': 'content-type'
+        }
   exp_tokens()
   with open('tokens.json','r',encoding='utf-8') as file:
     v = json.load(file).get(request.get_json()['token'],False)

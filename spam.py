@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 import sys
 import json
 
-weburl = 'http://noviercas.glitch.me'
+weburl = 'http://base-de-noviercas.onrender.com'
 
 def send_verification(name,token,mail):
     # Configuración

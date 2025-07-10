@@ -87,7 +87,8 @@ def handle_token():
     
     print(new_file)
     
-    return jsonify({
+    """
+return jsonify({
         "token": str(new_password),
         "expires-in": expiration.isoformat()
     })
@@ -100,13 +101,14 @@ def send_data():
             'Access-Control-Allow-Methods': 'PUT,DELETE',
             'Access-Control-Allow-Headers': 'content-type'
         }
+    """
     name = request.get_json()['name']
-    token = request.get_json()['token']
+    token = str(new_password)
     mail = request.get_json()['mail']
     
     app.logger.info(send_verification(name,token,mail))
 
-    return jsonify({"status":"ok","values":{"name":name,"token":token,"mail":mail}})
+    return jsonify({"ok":True})
 
 
 @app.route('/check', methods=['POST','OPTIONS'])

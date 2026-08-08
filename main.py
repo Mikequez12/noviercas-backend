@@ -17,7 +17,7 @@ def admin():
   if request.method == 'OPTIONS':
         return 'preflight ok', 200, {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'PUT,DELETE',
+            'Access-Control-Allow-Methods': 'POST,OPTIONS',
             'Access-Control-Allow-Headers': 'content-type'
         }
   exp_tokens()

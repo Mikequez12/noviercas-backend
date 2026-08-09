@@ -9,7 +9,9 @@ weburl = 'http://base-de-noviercas.onrender.com'
 def send_verification(name,token,mail):
     # Configuración
     smtp_server = "smtp.gmail.com"
-    smtp_port = 587                                                              email_usuario = "base.de.noviercas@gmail.com"                                email_password = "sdpz dlta edaw gdkj"                                   
+    smtp_port = 587
+    email_usuario = "base.de.noviercas@gmail.com"
+    email_password = "sdpz dlta edaw gdkj"                                   
     # Crear el mensaje
     mensaje = MIMEMultipart()
     mensaje["Subject"] = "Verifica tu usuario"

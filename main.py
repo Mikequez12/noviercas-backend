@@ -146,7 +146,8 @@ def login():
     exp_tokens()
 
     # Generar token
-    actual_tokens = load_tokens()
+	with open('tokens.json','r',encoding='utf-8') as file:
+        actual_tokens = json.load(file)
 
     for _ in range(1000):
         token = str(random.randint(0, 99999999))
@@ -164,7 +165,8 @@ def login():
         }
     }
 
-    save_tokens(actual_tokens)
+    with open('tokens.json','w',encoding='utf-8') as file:
+		json.dump(actual_tokens,file)
 
     # Enviar correo DESDE EL BACKEND
     result = send_verification(
@@ -176,9 +178,10 @@ def login():
     if not result:
         # Opcional: eliminar el token si el correo falló
         del actual_tokens[token]
-        save_tokens(actual_tokens)
+        with open('tokens.json','w',encoding='utf-8') as file:
+			json.dump(actual_tokens,file)
 
-        return jsonify({"ok": False}), 500
+        return jsonify({"ok": True}), 500
 
     return jsonify({"ok": True})
 

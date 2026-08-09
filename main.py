@@ -147,7 +147,7 @@ def login():
 
     # Generar token
 	with open('tokens.json','r',encoding='utf-8') as file:
-        actual_tokens = json.load(file)
+		actual_tokens = json.load(file)
 
     for _ in range(1000):
         token = str(random.randint(0, 99999999))
@@ -162,11 +162,11 @@ def login():
         "exp": expiration.isoformat(),
         "dat": {
             "dsr": dsr
-        }
+		}
     }
 
     with open('tokens.json','w',encoding='utf-8') as file:
-		json.dump(actual_tokens,file)
+        json.dump(actual_tokens,file)
 
     # Enviar correo DESDE EL BACKEND
     result = send_verification(

@@ -10,6 +10,10 @@ from flask_cors import CORS
 import requests
 
 
+@app.route('/ping')
+def ping():
+    return 'pong'
+
 def get_users():
     values = requests.get(
         'https://sheets.googleapis.com/v4/spreadsheets/1RCxdryrlsUn37VZz5UlndUcFWjCUDElhGQMJLTfx6rk/values/signup?key=AIzaSyCPoCo9JcBf6_p7JqlPDZ_6frBODdw4EAI'

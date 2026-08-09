@@ -165,6 +165,7 @@ def login():
 
     # Buscar usuario
     user = get_users().get(dsr)
+    return "got the users",200
 
     if not user:
         return jsonify({"ok": True, "error": "Not found"}), 404

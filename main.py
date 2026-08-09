@@ -165,7 +165,6 @@ def login():
 
     # Buscar usuario
     user = get_users().get(dsr)
-    return "got the users",200
 
     if not user:
         return jsonify({"ok": True, "error": "Not found"}), 404
@@ -185,6 +184,8 @@ def login():
         return jsonify({"ok": False}), 500
 
     expiration = datetime.utcnow() + timedelta(minutes=5)
+
+    return "-",200
 
     actual_tokens[token] = {
         "exp": expiration.isoformat(),

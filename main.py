@@ -10,9 +10,7 @@ from flask_cors import CORS
 import requests
 
 
-@app.route('/ping')
-def ping():
-    return 'pong'
+
 
 def get_users():
     values = requests.get(
@@ -40,6 +38,9 @@ def get_users():
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+@app.route('/ping')
+def ping():
+    return 'pong'
 
 @app.route('/admin', methods=['POST', 'OPTIONS'])
 def admin():

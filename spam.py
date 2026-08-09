@@ -92,15 +92,15 @@ def send_verification(name, token, mail):
 
         t = time.perf_counter()
         servidor = smtplib.SMTP("smtp.gmail.com", 587)
-        print("SMTP:", time.perf_counter() - t, flush=True)
+        print("SMTP:", time.perf_counter() - t,file=sys.stderr, flush=True)
 
         t = time.perf_counter()
         servidor.starttls()
-        print("STARTTLS:", time.perf_counter() - t, flush=True)
+        print("STARTTLS:", time.perf_counter() - t,file=sys.stderr, flush=True)
 
         t = time.perf_counter()
         servidor.login(email_usuario, email_password)
-        print("LOGIN:", time.perf_counter() - t, flush=True)
+        print("LOGIN:", time.perf_counter() - t,file=sys.stderr, flush=True)
 
         t = time.perf_counter()
         servidor.sendmail(
@@ -108,11 +108,11 @@ def send_verification(name, token, mail):
             [mail],
             mensaje.as_string()
         )
-        print("SENDMAIL:", time.perf_counter() - t, flush=True)
+        print("SENDMAIL:", time.perf_counter() - t,file=sys.stderr, flush=True)
 
         t = time.perf_counter()
         servidor.quit()
-        print("QUIT:", time.perf_counter() - t, flush=True)
+        print("QUIT:", time.perf_counter() - t,file=sys.stderr, flush=True)
 
         return "Correo enviado correctamente."
 

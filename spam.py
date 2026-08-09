@@ -1,6 +1,5 @@
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText                                         from email.mime.multipart import MIMEMultipart
 import sys
 import json
 
@@ -9,21 +8,14 @@ weburl = 'http://base-de-noviercas.onrender.com'
 def send_verification(name,token,mail):
     # Configuración
     smtp_server = "smtp.gmail.com"
-    smtp_port = 587
-    email_usuario = "base.noviercas@gmail.com"
-    email_password = "qzzv wvbv smfo ggmf"
-
+    smtp_port = 587                                                              email_usuario = "base.de.noviercas@gmail.com"                                email_password = "sdpz dlta edaw gdkj"                                   
     # Crear el mensaje
     mensaje = MIMEMultipart()
     mensaje["Subject"] = "Verifica tu usuario"
-    mensaje["From"] = email_usuario
-    mensaje["To"] = mail
-
-    html = '''\
+    mensaje["From"] = email_usuario                                              mensaje["To"] = mail                                                                                                                                      html = '''\
                 <meta charset="utf-8">
       <html>
-      <body style="display:flex;align-items: center;align-content: center;text-align: center;font-family: sans-serif;color:black;">
-        <div id='body' style="position: relative; border: solid darkcyan 2px;border-radius: 10px;padding: 10px;display: inline-block;margin: auto;box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;text-align:left;">
+      <body style="display:flex;align-items: center;align-content: center;text-align: center;font-family: sans-serif;color:black;">                               <div id='body' style="position: relative; border: solid darkcyan 2px;border-radius: 10px;padding: 10px;display: inline-block;margin: auto;box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;text-align:left;">
           <h1 style="color:darkcyan">Estimad@ '''+name+'''</h1>
           <hr>
           <p>Según nuestros registros, usted ha intentado iniciar sesión en su cuenta de La Base de Noviercas. Si es así, le enviamos el siguiente enlace temporal.</p>

@@ -48,7 +48,8 @@ def exp_tokens():
 if not os.path.exists('tokens.json'):
     with open('tokens.json', 'w') as f:
         json.dump({}, f)
-  
+
+"""
 @app.route('/token', methods=['POST','OPTIONS'])
 def handle_token():
     if request.method == 'OPTIONS':
@@ -109,7 +110,61 @@ def send_data():
     app.logger.info(send_verification(name,token,mail))
 
     return jsonify({"ok":True})
+"""
 
+@app.route('/token', methods=['POST', 'OPTIONS']) # login
+def login():
+    if request.method == 'OPTIONS':
+        return 'preflight ok', 200
+
+    data = request.get_json()
+
+    dsr = data['dsr']
+
+    # Buscar usuario
+    user = get_user_by_dsr(dsr)
+
+    if not user:
+        return jsonify({"ok": False}), 404
+
+    exp_tokens()
+
+    # Generar token
+    actual_tokens = load_tokens()
+
+    for _ in range(1000):
+        token = str(random.randint(0, 99999999))
+        if token not in actual_tokens:
+            break
+    else:
+        return jsonify({"ok": False}), 500
+
+    expiration = datetime.utcnow() + timedelta(minutes=5)
+
+    actual_tokens[token] = {
+        "exp": expiration.isoformat(),
+        "dat": {
+            "dsr": dsr
+        }
+    }
+
+    save_tokens(actual_tokens)
+
+    # Enviar correo DESDE EL BACKEND
+    result = send_verification(
+        user["name"],
+        token,
+        user["mail"]
+    )
+
+    if not result:
+        # Opcional: eliminar el token si el correo falló
+        del actual_tokens[token]
+        save_tokens(actual_tokens)
+
+        return jsonify({"ok": False}), 500
+
+    return jsonify({"ok": True})
 
 @app.route('/check', methods=['POST','OPTIONS'])
 def check():

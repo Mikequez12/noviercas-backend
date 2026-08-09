@@ -185,7 +185,7 @@ def login():
 
     expiration = datetime.utcnow() + timedelta(minutes=5)
 
-    return "-",200
+    # "-"
 
     actual_tokens[token] = {
         "exp": expiration.isoformat(),
@@ -203,6 +203,8 @@ def login():
         token,
         user["mail"]
     )
+
+    return "v",200
 
     if not result:
         # Opcional: eliminar el token si el correo falló

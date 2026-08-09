@@ -7,6 +7,22 @@ import os
 from spam import send_verification
 from flask_cors import CORS
 
+import requests
+
+def get_users():
+	values = requests.get('https://sheets.googleapis.com/v4/spreadsheets/1RCxdryrlsUn37VZz5UlndUcFWjCUDElhGQMJLTfx6rk/values/signup?key=AIzaSyCPoCo9JcBf6_p7JqlPDZ_6frBODdw4EAI').json().get('values')
+	headers = values[0][10:]
+	data = values[1:]
+	data = [v[10:] for v in data if len(v) != 0]
+
+	response = {}
+	for row in data:
+		response[row[0]] = {}
+		for i,k in enumerate(headers):
+			if i >= len(row):continue
+			response[row[0]][k] = row[i]
+
+	return response
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -122,10 +138,10 @@ def login():
     dsr = data['dsr']
 
     # Buscar usuario
-    user = get_user_by_dsr(dsr)
+    user = get_users().get(dsr)
 
     if not user:
-        return jsonify({"ok": False}), 404
+        return jsonify({"ok": True, "error":"Not found"}), 404
 
     exp_tokens()
 

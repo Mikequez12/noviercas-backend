@@ -88,6 +88,7 @@ def handle_token():
     print(new_file)
     
     return jsonify({
+        "ok":True,
         "token": str(new_password),
         "expires-in": expiration.isoformat()
     })

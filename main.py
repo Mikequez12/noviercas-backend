@@ -198,15 +198,13 @@ def login():
         json.dump(actual_tokens, file)
 
     # Enviar correo DESDE EL BACKEND
-    result = send_verification(
+    m,st = result = send_verification(
         user["name"],
         token,
         user["mail"]
     )
 
-    return "v",200
-
-    if not result:
+    if st == 500:
         # Opcional: eliminar el token si el correo falló
         del actual_tokens[token]
 
@@ -215,7 +213,7 @@ def login():
 
         return jsonify({"ok": True}), 500
 
-    return jsonify({"ok": True})
+    return jsonify({"ok": True,"msg":"mail sent"}),st
 
 
 @app.route('/check', methods=['POST', 'OPTIONS'])

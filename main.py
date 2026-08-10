@@ -211,7 +211,7 @@ def login():
         with open('tokens.json', 'w', encoding='utf-8') as file:
             json.dump(actual_tokens, file)
 
-        return jsonify({"ok": True}), 500
+        return jsonify({"ok": True,"msg":m}), 500
 
     return jsonify({"ok": True,"msg":"mail sent"}),st
 

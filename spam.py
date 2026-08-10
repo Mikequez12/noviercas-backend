@@ -114,7 +114,7 @@ def send_verification(name, token, mail):
         servidor.quit()
         print("QUIT:", time.perf_counter() - t,file=sys.stderr, flush=True)
 
-        return "Correo enviado correctamente."
+        return "Correo enviado correctamente.",200
 
     except Exception as e:
-        return f"Error al enviar el correo: {e}"
+        return f"Error al enviar el correo: {e}",500

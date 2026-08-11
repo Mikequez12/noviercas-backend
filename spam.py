@@ -1,90 +1,79 @@
-import requests
 import os
+import base64
+from email.mime.text import MIMEText
 
-weburl = "http://base-de-noviercas.onrender.com"
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 
-def send_verification(name, token, mail):
 
-    brevo_api_key = os.environ["BREVO_API_KEY"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
-    html = '''\
-    <meta charset="utf-8">
-    <html>
-    <body style="display:flex;align-items:center;align-content:center;text-align:center;font-family:sans-serif;color:black;">
-        <div id="body" style="position:relative;border:solid darkcyan 2px;border-radius:10px;padding:10px;display:inline-block;margin:auto;box-shadow:rgba(0,0,0,0.2) 0px 4px 12px;text-align:left;">
-            <h1 style="color:darkcyan">Estimad@ ''' + name + '''</h1>
-            <hr>
-            <p>
-                Según nuestros registros, usted ha intentado iniciar sesión
-                en su cuenta de La Base de Noviercas. Si es así, le enviamos
-                el siguiente enlace temporal.
-            </p>
+CREDENTIALS_FILE = "credentials.json"
+TOKEN_FILE = "token.json"
 
-            <a
-                style="color:darkcyan !important"
-                href="http://mikequez12.github.io/base-de-noviercas/account#''' + token + '''"
-            >
-                Iniciar sesión
-            </a>
 
-            <p style="color:gray;font-size:12px;">
-                Este enlace durará aproximadamente 5 minutos. Si necesita
-                más tiempo, considere volver a intentar iniciar sesión para
-                recibir otro enlace.
-            </p>
+def get_gmail_service():
+    creds = None
 
-            Por favor, nunca comparta este enlace. Nuestro sistema trata de
-            ser seguro, pero como cualquier otro, tiene vulnerabilidades.
-            Si comparte este código, contáctenos de inmediato.
-
-            <br>
-            <h4>¡Gracias!</h4>
-
-            <footer style="
-                position:absolute;
-                color:white;
-                left:0;
-                bottom:0;
-                width:calc(100% - 20px);
-                background:linear-gradient(to right, darkcyan, transparent);
-                padding:10px;
-                border-radius:5px;
-            ">
-                Base de Noviercas
-            </footer>
-        </div>
-    </body>
-    </html>
-    '''
-
-    try:
-        response = requests.post(
-            "https://api.brevo.com/v3/smtp/email",
-            headers={
-                "accept": "application/json",
-                "api-key": brevo_api_key,
-                "content-type": "application/json"
-            },
-            json={
-                "sender": {
-                    "name": "Base de Noviercas",
-                    "email": "base.de.noviercas@gmail.com"
-                },
-                "to": [
-                    {
-                        "email": mail,
-                        "name": name
-                    }
-                ],
-                "subject": "Verifica tu usuario",
-                "htmlContent": html
-            }
+    # Token OAuth previamente obtenido
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(
+            TOKEN_FILE,
+            SCOPES
         )
 
-        if response.ok:
-            return f"Correo enviado correctamente. ({response.text})", 200
+    # Renovar token si ha expirado
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
 
-        return f"Error de Brevo: {response.status_code} {response.text}", 500
+    # Primera autorización
+    if not creds or not creds.valid:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            CREDENTIALS_FILE,
+            SCOPES
+        )
 
-    except Exception as e:
-        return f"Error al enviar el correo: {e}", 500
+        creds = flow.run_local_server(port=0)
+
+        with open(TOKEN_FILE, "w") as token:
+            token.write(creds.to_json())
+
+    return build("gmail", "v1", credentials=creds)
+
+
+def send_verification(name, token, mail):
+    service = get_gmail_service()
+
+    verification_url = (
+        f"https://base-de-noviercas.onrender.com/verify/{token}"
+    )
+
+    body = f"""Hola {name}.
+
+Verifica tu cuenta mediante este enlace:
+
+{verification_url}
+
+Si no has creado esta cuenta, puedes ignorar este correo.
+"""
+
+    message = MIMEText(body, "plain", "utf-8")
+
+    message["To"] = mail
+    message["Subject"] = "Verifica tu usuario"
+
+    raw_message = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode()
+
+    result = service.users().messages().send(
+        userId="me",
+        body={"raw": raw_message}
+    ).execute()
+
+    print("Correo enviado correctamente.")
+    print(result)
+
+    return result

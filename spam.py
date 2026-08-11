@@ -1,32 +1,11 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import sys
-import json
-import socket
-
-original_getaddrinfo = socket.getaddrinfo
-
-def getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
-    return original_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
-
-socket.getaddrinfo = getaddrinfo_ipv4
+import requests
+import os
 
 weburl = "http://base-de-noviercas.onrender.com"
 
-
 def send_verification(name, token, mail):
-    # Configuración
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 587
-    email_usuario = "base.de.noviercas@gmail.com"
-    email_password = "sdpz dlta edaw gdkj"
 
-    # Crear el mensaje
-    mensaje = MIMEMultipart()
-    mensaje["Subject"] = "Verifica tu usuario"
-    mensaje["From"] = email_usuario
-    mensaje["To"] = mail
+    brevo_api_key = os.environ["BREVO_API_KEY"]
 
     html = '''\
     <meta charset="utf-8">
@@ -35,7 +14,6 @@ def send_verification(name, token, mail):
         <div id="body" style="position:relative;border:solid darkcyan 2px;border-radius:10px;padding:10px;display:inline-block;margin:auto;box-shadow:rgba(0,0,0,0.2) 0px 4px 12px;text-align:left;">
             <h1 style="color:darkcyan">Estimad@ ''' + name + '''</h1>
             <hr>
-
             <p>
                 Según nuestros registros, usted ha intentado iniciar sesión
                 en su cuenta de La Base de Noviercas. Si es así, le enviamos
@@ -60,7 +38,6 @@ def send_verification(name, token, mail):
             Si comparte este código, contáctenos de inmediato.
 
             <br>
-
             <h4>¡Gracias!</h4>
 
             <footer style="
@@ -80,49 +57,34 @@ def send_verification(name, token, mail):
     </html>
     '''
 
-    mensaje.attach(MIMEText(html, "html"))
-
-    # Enviar el correo
     try:
-        """
-        servidor = smtplib.SMTP(smtp_server, smtp_port)
-        servidor.starttls()
-        servidor.login(email_usuario, email_password)
-        servidor.sendmail(
-            email_usuario,
-            [mail],
-            mensaje.as_string()
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "accept": "application/json",
+                "api-key": brevo_api_key,
+                "content-type": "application/json"
+            },
+            json={
+                "sender": {
+                    "name": "Base de Noviercas",
+                    "email": "base.de.noviercas@gmail.com"
+                },
+                "to": [
+                    {
+                        "email": mail,
+                        "name": name
+                    }
+                ],
+                "subject": "Verifica tu usuario",
+                "htmlContent": html
+            }
         )
-        servidor.quit()
-        """
-        import time
-        import smtplib
 
-        t = time.perf_counter()
-        servidor = smtplib.SMTP("smtp.gmail.com", 587)
-        print("SMTP:", time.perf_counter() - t,file=sys.stderr, flush=True)
+        if response.ok:
+            return "Correo enviado correctamente.", 200
 
-        t = time.perf_counter()
-        servidor.starttls()
-        print("STARTTLS:", time.perf_counter() - t,file=sys.stderr, flush=True)
-
-        t = time.perf_counter()
-        servidor.login(email_usuario, email_password)
-        print("LOGIN:", time.perf_counter() - t,file=sys.stderr, flush=True)
-
-        t = time.perf_counter()
-        servidor.sendmail(
-            email_usuario,
-            [mail],
-            mensaje.as_string()
-        )
-        print("SENDMAIL:", time.perf_counter() - t,file=sys.stderr, flush=True)
-
-        t = time.perf_counter()
-        servidor.quit()
-        print("QUIT:", time.perf_counter() - t,file=sys.stderr, flush=True)
-
-        return "Correo enviado correctamente.",200
+        return f"Error de Brevo: {response.status_code} {response.text}", 500
 
     except Exception as e:
-        return f"Error al enviar el correo: {e}",500
+        return f"Error al enviar el correo: {e}", 500

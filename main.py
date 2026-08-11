@@ -213,7 +213,7 @@ def login():
 
         return jsonify({"ok": True,"msg":m}), 500
 
-    return jsonify({"ok": True,"msg":"mail sent"}),st
+    return jsonify({"ok": True,"msg":"mail sent","b":m}),st
 
 
 @app.route('/check', methods=['POST', 'OPTIONS'])

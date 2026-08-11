@@ -82,7 +82,7 @@ def send_verification(name, token, mail):
         )
 
         if response.ok:
-            return f"Correo enviado correctamente. ({responde.text})", 200
+            return f"Correo enviado correctamente. ({response.text})", 200
 
         return f"Error de Brevo: {response.status_code} {response.text}", 500
 
